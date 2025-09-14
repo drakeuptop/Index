@@ -1,0 +1,30 @@
+<input type="email" id="email" placeholder="Enter your email" required />
+<button id="sendBtn">Send to Email</button>
+
+<script>
+  document.getElementById("sendBtn").addEventListener("click", async () => {
+    const email = document.getElementById("email").value;
+
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
+
+    try {
+      const res = await fetch("/.netlify/functions/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("✅ Order sent to " + email);
+      } else {
+        alert("❌ Failed: " + data.error);
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  });
+</script>
