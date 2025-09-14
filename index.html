@@ -1,91 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LSU Order Confirmation</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-    }
-    .card h1 {
-      color: #461D7C;
-      margin-bottom: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background: #461D7C;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background: #372064;
-    }
+    body{margin:0;background:#f5f6f8;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:480px;margin:24px auto;padding:16px}
+    .card{background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:20px}
+    .lsu{background:#461D7C;color:#fff;border-radius:10px;height:140px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:44px;letter-spacing:3px;margin-bottom:16px}
+    h1{font-size:22px;margin:8px 0 6px}
+    p{margin:4px 0;color:#222}
+    small{color:#666}
+    input{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:10px;margin:12px 0 10px;font-size:16px}
+    button{width:100%;padding:12px 14px;border:0;border-radius:12px;background:#461D7C;color:#fff;font-weight:700;font-size:16px}
+    button:active{transform:translateY(1px)}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>LSU SPORT — Football vs. Southern Louisiana</h1>
-    <p><strong>Date:</strong> Sat, Sep 20, 2025 • 6:45 PM</p>
-    <p><strong>Venue:</strong> Tiger Stadium</p>
-    <p><strong>Seats:</strong> Sec 101 • Row 30 • Seats 1–2</p>
+  <div class="wrap">
+    <div class="card">
+      <div class="lsu">LSU</div>
 
-    <input type="email" id="email" placeholder="Enter your email" required />
-    <button id="sendBtn">Send to Email</button>
+      <small>LSU SPORT</small>
+      <h1>Football vs. Southern Louisiana</h1>
+      <p><strong>Date:</strong> Sat, Sep 20, 2025 • 6:45 PM</p>
+      <p><strong>Venue:</strong> Tiger Stadium</p>
+      <p><strong>Seats:</strong> Sec 101 • Row 30 • Seats 1–2</p>
+
+      <!-- NO mailto, just a plain input + button -->
+      <input id="email" type="email" placeholder="Enter your email" autocomplete="email" />
+      <button id="sendBtn" type="button">Send to Email</button>
+      <p id="msg" style="margin-top:10px;color:#461D7C;"></p>
+    </div>
   </div>
 
-  <script>
-    document.getElementById("sendBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-
-      if (!email) {
-        alert("Please enter your email");
-        return;
-      }
-
-      try {
-        const res = await fetch("/.netlify/functions/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          alert("✅ Order sent to " + email);
-        } else {
-          alert("❌ Failed: " + data.error);
-        }
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    });
-  </script>
+  <script src="./app.js" defer></script>
 </body>
 </html>
