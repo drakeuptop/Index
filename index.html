@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LSU Order Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    .card h1 {
+      color: #461D7C;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #461D7C;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background: #372064;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>LSU SPORT — Football vs. Southern Louisiana</h1>
+    <p><strong>Date:</strong> Sat, Sep 20, 2025 • 6:45 PM</p>
+    <p><strong>Venue:</strong> Tiger Stadium</p>
+    <p><strong>Seats:</strong> Sec 101 • Row 30 • Seats 1–2</p>
+
+    <input type="email" id="email" placeholder="Enter your email" required />
+    <button id="sendBtn">Send to Email</button>
+  </div>
+
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+
+      if (!email) {
+        alert("Please enter your email");
+        return;
+      }
+
+      try {
+        const res = await fetch("/.netlify/functions/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ Order sent to " + email);
+        } else {
+          alert("❌ Failed: " + data.error);
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
