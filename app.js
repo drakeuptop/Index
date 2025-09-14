@@ -1,39 +1,26 @@
-const btn = document.getElementById("sendBtn");
-const emailEl = document.getElementById("email");
-const msg = document.getElementById("msg");
+document.getElementById("sendBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
 
-btn?.addEventListener("click", async () => {
-  const email = (emailEl.value || "").trim();
-  if (!email) {
-    msg.textContent = "Please enter an email address.";
+  // basic guard
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError("Enter a valid email address.");
     return;
   }
 
-  btn.disabled = true;
-  msg.textContent = "Sending…";
-
+  setSending(true);
   try {
     const res = await fetch("/.netlify/functions/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        eventTitle: "LSU SPORT — Football vs. Southern Louisiana",
-        dateTime: "Sat, Sep 20, 2025 • 6:45 PM",
-        venue: "Tiger Stadium",
-        seats: "Sec 101 • Row 30 • Seats 1–2",
-      }),
+      body: JSON.stringify({ email }) // <-- important
     });
 
-    const data = await res.json();
-    if (res.ok && data.success) {
-      msg.textContent = `✅ Sent to ${email}`;
-    } else {
-      msg.textContent = `❌ Failed: ${data.error || res.statusText}`;
-    }
+    const json = await res.json();
+    if (!res.ok) throw new Error(json?.error?.message || json?.error || "Failed to send");
+    showSuccess("Email sent!");
   } catch (e) {
-    msg.textContent = `❌ Error: ${e.message}`;
+    showError(e.message);
   } finally {
-    btn.disabled = false;
+    setSending(false);
   }
 });
