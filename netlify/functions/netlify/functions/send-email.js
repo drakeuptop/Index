@@ -1,37 +1,32 @@
+// netlify/functions/send-email.js
 import { Resend } from "resend";
 
-export default async (req, context) => {
-  try {
-    const body = await req.json();
-    const { email, eventTitle, dateTime, venue, seats } = body || {};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+export async function handler(event) {
+  try {
+    const { email } = JSON.parse(event.body || "{}");   // recipient from form
     if (!email) {
-      return new Response(JSON.stringify({ success: false, error: "Missing email" }), { status: 400 });
+      return { statusCode: 400, body: JSON.stringify({ error: "Recipient email is required" }) };
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const subject = `LSU Order – ${eventTitle}`;
-    const html = `
-      <p>Your order is confirmed.</p>
-      <p><strong>Event:</strong> ${eventTitle}</p>
-      <p><strong>When:</strong> ${dateTime}</p>
-      <p><strong>Where:</strong> ${venue}</p>
-      <p><strong>Seats:</strong> ${seats}</p>
-      <p>Thank you for your purchase!</p>
-    `;
-
-    const { error } = await resend.emails.send({
-      from: "LSU Tickets <tickets@yourdomain.example>", // or a verified Resend domain
-      to: email,
-      subject,
-      html
+    const { data, error } = await resend.emails.send({
+      from: "LSU Tickets <onboarding@resend.dev>",      // fixed & valid sender
+      to: email,                                        // send TO the entered email
+      subject: "LSU Order – Football vs. Southern Louisiana",
+      html: `
+        <p>Your order is confirmed.</p>
+        <p><b>Event:</b> LSU SPORT — Football vs. Southern Louisiana</p>
+        <p><b>Date:</b> Sat, Sep 20, 2025 • 6:45 PM</p>
+        <p><b>Venue:</b> Tiger Stadium</p>
+        <p><b>Seats:</b> Sec 101 • Row 30 • Seats 1–2</p>
+        <p>Thank you for your purchase!</p>
+      `
     });
 
-    if (error) {
-      return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500 });
-    }
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    if (error) return { statusCode: 500, body: JSON.stringify({ error }) };
+    return { statusCode: 200, body: JSON.stringify({ success: true, id: data?.id }) };
   } catch (e) {
-    return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500 });
+    return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
-};
+}
